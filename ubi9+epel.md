@@ -21,7 +21,7 @@ An `ARG` for the version, `VER` is there. This can be overridden with `--build-a
 <<base.image>>=
 ARG VER=latest
 FROM docker.io/redhat/ubi9:${VER}
-@
+@  % def VER
 ```
 
 ### Setup user specific arguments.

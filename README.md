@@ -24,7 +24,12 @@ I like to insure that my containers follow a few simple rules.
 
 ## Docker Files
 
- * ubi9+epel
+ * [ubi9+epel](ubi9+epel.md)
    * Redhat's Universal Base Image (UBI) for RHEL9, with epel installed and read for use.
+ * [ubuntu](ubuntu.md)
+   * Yes, I use Ubuntu from time to time. 
+ * [fossil](fossil.md)
+   * I use fossil quite a bit. Nice to have an easy way to run it. I would recommend use the Dockerfile provide by fossil. I have this one here to highlight the usage of the scratch docker image. 
 
+## As always, go Guardians!
 

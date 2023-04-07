@@ -1,5 +1,5 @@
 TANGLE=tclsh scripts/tangle.tcl
-DOCKERFILES=ubi9+epel.dockerfile
+DOCKERFILES=ubi9+epel.dockerfile ubuntu.dockerfile fossil.dockerfile
 
 .SUFFIXES: .md .dockerfile
 
