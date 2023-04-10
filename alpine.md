@@ -109,5 +109,5 @@ WORKDIR ${baseDIR}
 ```
 ## build and test
 `docker build -t mek:alpine -f alpine.dockerfile .`
-`docker run --rm -it mek:alpine /bin/sh``
+`docker run --rm -it mek:alpine /bin/sh`
 ```

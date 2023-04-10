@@ -66,7 +66,7 @@ additional changes, etc.
 <<base.addsoftware>>=
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get -qq upgrade && \
-    DEBIAN_FRONTEND=noninteractive apt-get -qq ed joe tcl 
+    DEBIAN_FRONTEND=noninteractive apt-get -qq install ed joe tcl 
 @
 ```
 
