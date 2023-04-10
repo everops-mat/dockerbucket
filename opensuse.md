@@ -1,4 +1,5 @@
-# A simple base docker image for OpenSuse
+# A simple base docker image for OpenSuse 
+20230410
 
 My OpenSuse Docker Images are pretty standard. Nothing specific here. Currently
 the default version is opensuse/leap:15.
