@@ -147,3 +147,35 @@ tmp/passwd
 $ curl -LsSf -o /dev/null -w '%{http_code}\n'  http://localhost:9999
 200
 ```
+
+## Fossil Repo Server Image
+
+I also want to have a fossil repo server. I would have to change the run 
+portion.
+
+```
+<<fossil.reposerver>>=
+FROM scratch AS run
+COPY --from=os /tmp/group /tmp/passwd /etc/
+COPY --from=os --chown=fossil:fossil /log    /log/
+COPY --from=os --chown=fossil:fossil /museum /museum/
+COPY --from=os --chmod=1777          /tmp    /tmp/
+COPY --from=builder /tmp/fossil /bin/
+ENV PATH "/bin"
+EXPOSE 8080/tcp
+USER fossil
+ENTRYPOINT [ "fossil", "server", "/museum" ]
+CMD [ "--repolist" ]
+@
+```
+
+Now create the fossilserver dockerfile.
+
+```
+<<fossilserver.dockerfile>>=
+<<fossil.builder>>
+<<fossil.ossetup>>
+<<fossil.reposerver>>
+@
+```
+
