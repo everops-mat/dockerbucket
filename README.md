@@ -30,6 +30,7 @@ I like to insure that my containers follow a few simple rules.
    * Yes, I use Ubuntu from time to time. 
  * [fossil](fossil.md)
    * I use fossil quite a bit. Nice to have an easy way to run it. I would recommend use the Dockerfile provide by fossil. I have this one here to highlight the usage of the scratch docker image. 
+   * This also includes a fossilserver docker file that can be used to run a repolist server to make all the fossil repositories in a directory available. 
  * [opensuse](opensuse.md)
    * OpenSuse is my favorite development Linux distrobution. 
  * [alpine](alpine.md)
