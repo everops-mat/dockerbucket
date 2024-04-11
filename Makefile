@@ -1,5 +1,5 @@
 TANGLE=tclsh scripts/tangle.tcl
-ALL=ubi9epel ubuntu fossil opensuse alpine podman
+ALL=$(shell ls *.md | grep -v README.md | sed s/\.md$$//)
 
 .SUFFIXES: .md .dockerfile .test
 
