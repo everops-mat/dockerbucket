@@ -1,0 +1,92 @@
+#!/bin/sh
+# Mat Kovach
+set -eu
+
+BASE_DIR=${DOCKER_BASE_DIR-"$HOME/git/dockerbucket"}
+TANGLE="$HOME/bin/tangle.tcl"
+
+Err()
+{
+	echo "$@" 1>&2
+}
+
+Fail()
+{
+	Err "$@"
+	exit 1
+}
+
+op_build() {
+  cd ${BASE_DIR}
+  ${TANGLE} -R ${container}.dockerfile ${DOC} \
+      | docker build --platform=linux/amd64 -t ${DOCKER_IMAGE} . -f -
+}
+
+op_run() {
+	CMD=${1+"$@"}
+	docker run --rm -it                       \
+		-v $home/work:/data               \
+		-e DISPLAY=host.docker.internal:0 \
+		--platform=linux/amd64            \
+		${DOCKER_IMAGE} ${CMD}
+}
+
+usage() {
+	echo "$0 [OPTIONS] CONTAINER CMD [DOCKER ARGUMENTS]"
+	echo
+	echo "  CONTAINER - Container to run, will look for markdown in ${BASE_DIR}"
+	echo
+	echo "  OPTIONS"
+	echo "    --help,-h,-?          - Display Usage"
+	echo "    -b,--basedir          - Change BASE_DIR to look for containers docs."
+	echo "    -dl,--imagelist       - List docker images created by this scripts."
+	echo
+	echo "  CMD"
+	echo "    build                 - build tcl docker image"
+	echo "    run                   - run tcl docker image option COMMAND"
+	exit 1
+}
+
+container=""
+EDITOR=${EDITOR:-vi}
+
+[ $# -lt 1 ]  && usage
+
+while true
+do
+	case "$1" in
+	--help|-h|-\?) usage ;;
+	-b|--basedir) shift ; BASE_DIR=$1; shift ;;
+	-l|-ls|--list)
+		ls ${BASE_DIR}/*.md | grep -v README.md \
+		| u sed -ne 's/.*\/\(.*\)\.md$/\1/p'
+		exit 0
+		;;
+	-dl|-imagelist) docker image ls | awk '$1 == "mek" {print}'; exit 0 ;;
+     -c|--container) shift; container=$1 shift ;;
+     -e|--edit) shift; exec $EDITOR ${BASE_DIR}/$1.md ; exit 0 ;;
+	--) shift ; break ;;
+	-*) Err "bad option: $1" ; usage ;;
+	*) break ;;
+	esac
+done
+
+[ -z ${container} ] && Fail "no container given, exiting"
+
+DOC="${BASE_DIR}/${container}.md"
+DOCKER_IMAGE="${container}:test"
+if [ ! -f "${DOC}" ]
+then
+	Err "Could not find ${DOC}, exiting"
+	usage
+fi
+
+op=$1; shift
+
+case "$op" in
+build) op_$op    ;;
+run)   op_$op $* ;;
+*) Err "illegal option $op, exiting" ; usage ;;
+esac
+
+exit 0
