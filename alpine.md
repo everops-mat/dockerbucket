@@ -3,7 +3,6 @@
 
 My Alpine Docker Images are pretty standard. Nothing specific here.
 
-
 ## Alpine Docker Image
 
 ### Setup FROM and enable a version choice.

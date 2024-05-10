@@ -52,8 +52,8 @@ RUN groupadd -g ${baseGID} ${baseUSER} &&      \
 
 ### Add repos and update software.
 
-First, we'll add any additional repo. If you have additional repos you want to 
-enable, add them here.
+First, we'll add any additional repo. If you have additional repos you 
+want to enable, add them here.
 
 ```
 <<base.enablerepos>>=
@@ -106,5 +106,5 @@ WORKDIR ${baseDIR}
 
 `docker build -t mek:gcc -f gcc.dockerfile .`
 
-`docker run --rm -it mek:gcc /bin/bash`
+`docker run --rm -it -v $HOME/src/<project>:/work mek:gcc /bin/bash`
 
