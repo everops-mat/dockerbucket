@@ -69,7 +69,7 @@ additional changes, etc.
 RUN dnf install -y epel-release && dnf update \
  && dnf group install -y "Development Tools" \
  && dnf install -y ed joe tcl tcllib vim gcc flex byacc sqlite-devel make gcc git \
-    valgrind gdb ltrace strace perf papi sysstat
+    valgrind gdb ltrace strace perf papi sysstat gcc-gnat gprbuild 
 @
 ```
 

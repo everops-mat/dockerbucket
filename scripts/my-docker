@@ -40,11 +40,22 @@ usage() {
 	echo "    --help,-h,-?          - Display Usage"
 	echo "    -b,--basedir          - Change BASE_DIR to look for containers docs."
 	echo "    -dl,--imagelist       - List docker images created by this scripts."
+	echo "    -l,--list             - List available containers."
+	echo "    -c,--container        - Specify container to run."
 	echo
 	echo "  CMD"
 	echo "    build                 - build tcl docker image"
 	echo "    run                   - run tcl docker image option COMMAND"
+	echo "    edit                  - edit tcl docker image markdown file"
 	exit 1
+}
+
+check_for_doc() {
+	if [ ! -f "${DOC}" ]
+	then
+		Err "Could not find ${DOC}, exiting"
+		usage
+	fi
 }
 
 container=""
@@ -63,8 +74,8 @@ do
 		exit 0
 		;;
 	-dl|-imagelist) docker image ls | awk '$1 == "mek" {print}'; exit 0 ;;
-     -c|--container) shift; container=$1 shift ;;
-     -e|--edit) shift; exec $EDITOR ${BASE_DIR}/$1.md ; exit 0 ;;
+        -c|--container) shift; container=$1 shift ;;
+        -e|--edit) shift; exec $EDITOR ${BASE_DIR}/$1.md ; exit 0 ;;
 	--) shift ; break ;;
 	-*) Err "bad option: $1" ; usage ;;
 	*) break ;;
@@ -75,17 +86,13 @@ done
 
 DOC="${BASE_DIR}/${container}.md"
 DOCKER_IMAGE="${container}:test"
-if [ ! -f "${DOC}" ]
-then
-	Err "Could not find ${DOC}, exiting"
-	usage
-fi
 
 op=$1; shift
 
 case "$op" in
-build) op_$op    ;;
-run)   op_$op $* ;;
+build) check_for_doc; op_$op    ;;
+run)   check_for_doc; op_$op $* ;;
+edit)  exec $EDITOR ${DOC} ;;
 *) Err "illegal option $op, exiting" ; usage ;;
 esac
 
