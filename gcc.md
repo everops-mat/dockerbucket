@@ -70,7 +70,7 @@ additional changes, etc.
 <<base.addsoftware>>=
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get -qq upgrade && \
-    DEBIAN_FRONTEND=noninteractive apt-get -qq install ed joe tcl yacc git vim sqlite3
+    DEBIAN_FRONTEND=noninteractive apt-get -qq install ed joe tcl yacc git vim sqlite3 gnat gprbuild
 @
 ```
 

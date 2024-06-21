@@ -7,9 +7,11 @@ make development and usage a bit more standardized.
 
 ### Setup FROM and enable a version choice.
 
-First let's set the where we'll pull from. I use `podman` and `docker` equally, so on I give the full path to the FROM image.
+First let's set the where we'll pull from. I use `podman` and `docker` 
+equally, so on I give the full path to the FROM image.
 
-An `ARG` for the version, `VER` is there. This can be overridden with `--build-arg 'VER=<version>'`.
+An `ARG` for the version, `VER` is there. This can be overridden 
+with `--build-arg 'VER=<version>'`.
 
 ```
 <<base.image>>=
@@ -20,7 +22,8 @@ FROM quay.io/centos/centos:${VER}
 
 ### Setup user specific arguments.
 
-Setup a base username, uid, gid, and work directory with some defaults. All of these can be overridden with `-build-arg "ARG=VALUE"`.
+Setup a base username, uid, gid, and work directory with some defaults. 
+All of these can be overridden with `-build-arg "ARG=VALUE"`.
 
 ```
 <<base.userargs>>=
@@ -70,6 +73,8 @@ RUN dnf install -y epel-release && dnf update \
  && dnf group install -y "Development Tools" \
  && dnf install -y ed joe tcl tcllib vim gcc flex byacc sqlite-devel make gcc git \
     valgrind gdb ltrace strace perf papi sysstat gcc-gnat gprbuild 
+RUN dnf install -y gcc-gfortran subversion cvs 
+   
 @
 ```
 

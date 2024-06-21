@@ -4,6 +4,7 @@ set -eu
 
 BASE_DIR=${DOCKER_BASE_DIR-"$HOME/git/dockerbucket"}
 TANGLE="$HOME/bin/tangle.tcl"
+PLATFORM=${DOCKER_PLATFORM-"linux/amd64"}
 
 Err()
 {
@@ -17,9 +18,9 @@ Fail()
 }
 
 op_build() {
-  cd ${BASE_DIR}
-  ${TANGLE} -R ${container}.dockerfile ${DOC} \
-      | docker build --platform=linux/amd64 -t ${DOCKER_IMAGE} . -f -
+  cd "${BASE_DIR}"
+  ${TANGLE} -R "${container}.dockerfile" "${DOC}" \
+      | docker build --platform=${PLATFORM} -t ${DOCKER_IMAGE} . -f -
 }
 
 op_run() {
@@ -27,7 +28,7 @@ op_run() {
 	docker run --rm -it                       \
 		-v $home/work:/data               \
 		-e DISPLAY=host.docker.internal:0 \
-		--platform=linux/amd64            \
+		--platform=${PLATFORM}            \
 		${DOCKER_IMAGE} ${CMD}
 }
 
@@ -47,6 +48,13 @@ usage() {
 	echo "    build                 - build tcl docker image"
 	echo "    run                   - run tcl docker image option COMMAND"
 	echo "    edit                  - edit tcl docker image markdown file"
+	echo 
+	echo "  ENVIRONMENT VARIABLES"
+	echo "    DOCKER_BASE_DIR       - location of docker definitions"
+	echo "      sets BASE_DIR and defaults to $HOME/git/dockerbucket"
+	echo "    DOCKER_PLATFORM       - default platorm to build docker images"
+	echo "      sets PLATFORM and defaults to linux/amd64"
+	echo
 	exit 1
 }
 
