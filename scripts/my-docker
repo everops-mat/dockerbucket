@@ -26,7 +26,7 @@ op_build() {
 op_run() {
 	CMD=${1+"$@"}
 	docker run --rm -it                       \
-		-v $home/work:/data               \
+		-v $HOME/work:/data               \
 		-e DISPLAY=host.docker.internal:0 \
 		--platform=${PLATFORM}            \
 		${DOCKER_IMAGE} ${CMD}
@@ -82,8 +82,7 @@ do
 		exit 0
 		;;
 	-dl|-imagelist) docker image ls | awk '$1 == "mek" {print}'; exit 0 ;;
-        -c|--container) shift; container=$1 shift ;;
-        -e|--edit) shift; exec $EDITOR ${BASE_DIR}/$1.md ; exit 0 ;;
+  -c|--container) shift; container=$1 shift ;;
 	--) shift ; break ;;
 	-*) Err "bad option: $1" ; usage ;;
 	*) break ;;

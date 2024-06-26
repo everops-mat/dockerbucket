@@ -1,0 +1,123 @@
+.TH MY-DOCKER 1
+.SH NAME
+my-docker \- My contorl interface to docker
+.SH SYNOPSIS
+.B my-docker 
+[
+.B "-b,--basedir"
+.I "directory"
+]
+[
+.B "-l,-ls,--list"
+]
+[
+.I "-dl,-imagelist"
+]
+[
+[
+.B "-c,--container"
+.I "container"
+]
+[
+.I command
+]
+.SH DESCRIPTION
+.I My-docker
+is a shell wrapper used to edit, build, and run docker images. The
+docker images are defined in markdown, and use a literate programming
+tool
+.B tangle
+to define the docker file for container 
+.B "-c,--container" 
+and use 
+.B vi
+or the editor defined by
+.I EDITOR
+to edit the container definition.
+
+The docker images are stored in the base directory, which defaults to 
+.I "$HOME/git/dockerbucket"
+but can be overridden, in order, by the 
+.I DOCKER_BASE_DIR
+environment variables or the
+.B "-b,--basedir"
+command line argument. 
+
+You can list the docker definition files that are available using
+.B "-l,-ls,--list"
+and using
+.B "-dl,--imagelist"
+will display the currently built images the local docker repository
+knows about.
+
+The 
+.I edit
+command will open a file
+.B container.md
+in the 
+.I base
+directory. If the file does not exists, it will be created. 
+The 
+.I build
+command will use the 
+.B tangle
+script to pull the docker definition out of the 
+.B container.md
+markdown file and build the image. The image will be
+build for the 
+.B linux/amd64
+platform unless overridden by the 
+.B DOCKER_PLATFORM
+environment variable.
+The 
+.I run
+command will run the docker image
+.B container:test
+where container is set by 
+.B "-c,--container"
+for the 
+.B linux/amd64 
+platform, unless overridden by the 
+.B DOCKER_PLATFORM
+environment variable. When the docker image is run
+the environment variable
+.B DISPLAY
+is set to 
+.I host.docker.internal:0
+which will allow X applicatoins on the docker image to 
+display on the host's X server, if available. The run 
+command will mount the host directory
+.I $HOME/work
+to the directory
+.I /data
+in the container. The
+.I run
+command will also accept a command argument when
+.I my-docker
+is run and use it with
+.I docker
+.B run
+to run a specific command when the container is started.
+.SH EXAMPLES
+.TP
+.B my-docker -l
+List the container markdown files defined in the base directory.
+.TP
+.B my-docker -c debian edit
+Edit the markdown container file for debian, creating the file it is does
+not exist.
+.TP
+.B my-docker -c debian build
+Build the container image for debian.
+.TP
+.B my-docker -c debian run /bin/tcsh
+Run the previously built debian container, using /bin/tcsh as the 
+startup command.
+.SH SOURCE
+.B scripts/my-docker
+.SH SEE ALSO
+.IR docker(1),
+.IR tangle(1)
+.SH BUGS
+Another bugfree(r) release. Please contact author if this happens to
+not be true.
