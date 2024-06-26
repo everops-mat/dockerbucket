@@ -18,5 +18,11 @@ clean:
 	@rm -f *~
 	@rm -rf $(ALL:%=%.dockerfile)
 
-.PHONY: default all clean test
+install:
+	@echo installing my-docker
+	@install scripts/my-docker $(HOME)/bin/my-docker
+	@echo installing my-docker man page
+	@install scripts/my-docker.1 $(HOME)/man/man1/my-docker.1
+
+.PHONY: default all clean test install
 

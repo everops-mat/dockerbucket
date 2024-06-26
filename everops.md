@@ -95,7 +95,7 @@ additional changes, etc.
 RUN  DEBIAN_FRONTEND=noninteractive apt-get update \
  &&  DEBIAN_FRONTEND=noninteractive apt-get -qq upgrade \
  &&  DEBIAN_FRONTEND=noninteractive apt-get -qq install ed joe tcl build-essential awscli \
- groff man git golang python3-pip 
+ groff man git golang python3-pip curl unzip
 @ 
 ```
 
@@ -114,6 +114,15 @@ WORKDIR ${baseDIR}
 @
 ```
 
+### Install tfenv
+```
+<<base.tfenv>>=
+RUN git clone --depth=1 https://github.com/tfutils/tfenv.git $HOME/.tfenv \
+ && echo 'export PATH="$HOME/.tfenv/bin:$PATH"' >> ~/.bashrc \
+ && $HOME/.tfenv/bin/tfenv install 1.6.0 \
+ && $HOME/.tfenv/bin/tfenv use 1.6.0 
+@
+```
 ### Pulling it all together
 
 ```
@@ -124,6 +133,7 @@ WORKDIR ${baseDIR}
 <<base.enablerepos>>
 <<base.addsoftware>>
 <<base.end>>
+<<base.tfenv>>
 @
 ```
 

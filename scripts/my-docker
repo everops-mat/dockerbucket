@@ -1,106 +1,115 @@
 #!/bin/sh
 # Mat Kovach
+# A shell script for opionated docker operations using literate 
+# programming for docker definitions
 set -eu
 
 BASE_DIR=${DOCKER_BASE_DIR-"$HOME/git/dockerbucket"}
-TANGLE="$HOME/bin/tangle.tcl"
-PLATFORM=${DOCKER_PLATFORM-"linux/amd64"}
+TANGLE_SCRIPT="$HOME/bin/tangle.tcl"
+TARGET_PLATFORM=${DOCKER_PLATFORM-"linux/amd64"}
 
-Err()
-{
-	echo "$@" 1>&2
+Err() {
+    echo "Error: $@" 1>&2
 }
 
-Fail()
-{
-	Err "$@"
-	exit 1
-}
-
-op_build() {
-  cd "${BASE_DIR}"
-  ${TANGLE} -R "${container}.dockerfile" "${DOC}" \
-      | docker build --platform=${PLATFORM} -t ${DOCKER_IMAGE} . -f -
-}
-
-op_run() {
-	CMD=${1+"$@"}
-	docker run --rm -it                       \
-		-v $HOME/work:/data               \
-		-e DISPLAY=host.docker.internal:0 \
-		--platform=${PLATFORM}            \
-		${DOCKER_IMAGE} ${CMD}
+Fail() {
+    Err "$@"
+    exit 1
 }
 
 usage() {
-	echo "$0 [OPTIONS] CONTAINER CMD [DOCKER ARGUMENTS]"
-	echo
-	echo "  CONTAINER - Container to run, will look for markdown in ${BASE_DIR}"
-	echo
-	echo "  OPTIONS"
-	echo "    --help,-h,-?          - Display Usage"
-	echo "    -b,--basedir          - Change BASE_DIR to look for containers docs."
-	echo "    -dl,--imagelist       - List docker images created by this scripts."
-	echo "    -l,--list             - List available containers."
-	echo "    -c,--container        - Specify container to run."
-	echo
-	echo "  CMD"
-	echo "    build                 - build tcl docker image"
-	echo "    run                   - run tcl docker image option COMMAND"
-	echo "    edit                  - edit tcl docker image markdown file"
-	echo 
-	echo "  ENVIRONMENT VARIABLES"
-	echo "    DOCKER_BASE_DIR       - location of docker definitions"
-	echo "      sets BASE_DIR and defaults to $HOME/git/dockerbucket"
-	echo "    DOCKER_PLATFORM       - default platorm to build docker images"
-	echo "      sets PLATFORM and defaults to linux/amd64"
-	echo
-	exit 1
+    cat << __USAGE
+Usage: $0 [OPTIONS] CMD [DOCKER ARGUMENTS]
+    echo
+OPTIONS:
+  -h,  --help           Show this help message
+  -b,  --basedir DIR    Set the base directory (default: $HOME/git/dockerbucket)
+  -l,  --list           List available container definitions
+  -dl, --imagelist      List Docker images created by this script
+  -c,  --container      Specify the container to run
+
+COMMANDS:
+  build                Build the Docker image
+  run                  Run the Docker container
+  edit                 Edit the container markdown file
+  buildrun             Build and run the Docker container
+
+ENVIRONMENT VARIABLES:
+  DOCKER_BASE_DIR      Directory for Docker definitions (default: $HOME/git/dockerbucket)
+  DOCKER_PLATFORM      Docker platform (default: linux/amd64)
+__USAGE
+    exit 1
+}
+
+generate_dockerfile() {
+    local dockerfile_content
+    dockerfile_content=$(${TANGLE_SCRIPT} -R "${container}.dockerfile" "${DOC}")
+    [ $? -eq 0 ] || Fail "Failed to generate Dockerfile from ${DOC}"
+    echo "$dockerfile_content"
+}
+
+op_build() {
+    cd "${BASE_DIR}" || Fail "Failed to change directory to ${BASE_DIR}"
+}
+
+op_run() {
+    CMD="$@"
+    docker run --rm -it \
+        -v "$HOME/work:/data" \
+        -e DISPLAY=host.docker.internal:0 \
+        --platform="${TARGET_PLATFORM}" \
+        "${DOCKER_IMAGE}" $CMD
 }
 
 check_for_doc() {
-	if [ ! -f "${DOC}" ]
-	then
-		Err "Could not find ${DOC}, exiting"
-		usage
-	fi
+    if [ ! -f "${DOC}" ]; then
+        Err "Could not find ${DOC}, exiting"
+        usage
+    fi
 }
 
 container=""
 EDITOR=${EDITOR:-vi}
 
-[ $# -lt 1 ]  && usage
+[ $# -lt 1 ] && usage
 
-while true
-do
-	case "$1" in
-	--help|-h|-\?) usage ;;
-	-b|--basedir) shift ; BASE_DIR=$1; shift ;;
-	-l|-ls|--list)
-		ls ${BASE_DIR}/*.md | grep -v README.md \
-		| u sed -ne 's/.*\/\(.*\)\.md$/\1/p'
-		exit 0
-		;;
-	-dl|-imagelist) docker image ls | awk '$1 == "mek" {print}'; exit 0 ;;
-  -c|--container) shift; container=$1 shift ;;
-	--) shift ; break ;;
-	-*) Err "bad option: $1" ; usage ;;
-	*) break ;;
-	esac
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --help|-h|-\?) usage ;;
+        -b|--basedir) shift; BASE_DIR="$1"; shift ;;
+        -l|-ls|--list)
+            ls "${BASE_DIR}"/*.md | grep -v README.md | sed -ne 's/.*\/\(.*\)\.md$/\1/p'
+            exit 0
+            ;;
+        -dl|--imagelist)
+            docker image ls | awk '$2 == "my-docker" {print}'
+            exit 0
+            ;;
+        -c|--container) shift; container="$1"; shift ;;
+        --) shift; break ;;
+        -*) Err "bad option: $1"; usage ;;
+        *) break ;;
+    esac
 done
 
-[ -z ${container} ] && Fail "no container given, exiting"
+[ -z "${container}" ] && Fail "no container given, exiting"
 
 DOC="${BASE_DIR}/${container}.md"
-DOCKER_IMAGE="${container}:test"
+DOCKER_IMAGE="${container}:my-docker"
 
 op=$1; shift
 
 case "$op" in
-build) check_for_doc; op_$op    ;;
-run)   check_for_doc; op_$op $* ;;
-edit)  exec $EDITOR ${DOC} ;;
-*) Err "illegal option $op, exiting" ; usage ;;
+    build) check_for_doc; op_build ;;
+    run) shift; check_for_doc; op_run "$@" ;;
+    edit) exec "$EDITOR" "${DOC}" ;;
+    buildrun)
+        check_for_doc
+        op_build
+        shift;
+        op_run "$@" 
+        ;;
+    *) Err "illegal option $op, exiting"; usage ;;
 esac
 
 exit 0
