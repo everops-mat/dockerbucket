@@ -50,6 +50,8 @@ generate_dockerfile() {
 
 op_build() {
     cd "${BASE_DIR}" || Fail "Failed to change directory to ${BASE_DIR}"
+    generate_dockerfile \
+      | docker build --platform=${TARGET_PLATFORM} -t ${DOCKER_IMAGE} . -f -
 }
 
 op_run() {
