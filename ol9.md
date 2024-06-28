@@ -94,3 +94,4 @@ WORKDIR ${baseDIR}
 `docker build -t mek:ol9 -f ol9-epel.dockerfile .`
 
 `docker run --rm -it mek:ol9 /bin/bash`
+
