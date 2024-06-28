@@ -103,12 +103,11 @@ op=$1; shift
 
 case "$op" in
     build) check_for_doc; op_build ;;
-    run) shift; check_for_doc; op_run "$@" ;;
+    run) check_for_doc; op_run "$@" ;;
     edit) exec "$EDITOR" "${DOC}" ;;
     buildrun)
         check_for_doc
         op_build
-        shift;
         op_run "$@" 
         ;;
     *) Err "illegal option $op, exiting"; usage ;;
