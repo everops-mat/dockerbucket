@@ -13,7 +13,7 @@ An `ARG` for the version, `VER` is there. This can be overridden with `--build-a
 
 ```
 <<base.image>>=
-ARG VER=22.04
+ARG VER=24.04
 FROM docker.io/ubuntu:${VER}
 @  % def VER
 ```
