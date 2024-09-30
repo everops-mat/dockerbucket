@@ -1,15 +1,18 @@
-# A simple base docker image for Debian
+# A simple base docker image for free pascal
 
-My Debian Docker Images are pretty standard. Nothing specific here. Currently
-the default version is 12.
+A simple free pascal based docker image
 
-## Debian Docker Image
+## Free Pascal Docker Image
+
+[Free Pascal](https://freepascal.org/)
 
 ### Setup FROM and enable a version choice.
 
-First let's set the where we'll pull from. I use `podman` and `docker` equally, so on I give the full path to the FROM image.
+First let's set the where we'll pull from. I use `podman` and `docker` 
+equally, so on I give the full path to the FROM image.
 
-An `ARG` for the version, `VER` is there. This can be overridden with `--build-arg 'VER=<version>'`.
+An `ARG` for the version, `VER` is there. This can be overridden 
+with `--build-arg 'VER=<version>'`.
 
 ```
 <<base.image>>=
@@ -20,18 +23,18 @@ FROM docker.io/debian:${VER}
 
 ### Setup user specific arguments.
 
-Setup a base username, uid, gid, and work directory with some defaults. All of these can be overridden with `-build-arg "ARG=VALUE"`.
+Setup a base username, uid, gid, and work directory with some 
+defaults. All of these can be overridden with `-build-arg "ARG=VALUE"`.
 
 ```
 <<base.userargs>>=
-ARG baseUSER="mat.kovach"
-ARG baseUID=5000
-ARG baseGID=5000
+ARG baseUSER="mek"
+ARG baseUID=501
+ARG baseGID=501
 ARG baseDIR="/work"
 @
 ```
 
-u
 ### Add user and work directory
 
 You'll need to be careful here to not change a current directory. For example, do not set baseDIR="/bin". 
@@ -49,8 +52,8 @@ RUN groupadd -g ${baseGID} ${baseUSER} &&      \
 
 ### Add repos and update software.
 
-First, we'll add any additional repo. If you have additional repos you want to 
-enable, add them here.
+First, we'll add any additional repo. If you have additional repos you 
+want to enable, add them here.
 
 ```
 <<base.enablerepos>>=
@@ -65,9 +68,10 @@ additional changes, etc.
 
 ```
 <<base.addsoftware>>=
-RUN  DEBIAN_FRONTEND=noninteractive apt-get update \
- &&  DEBIAN_FRONTEND=noninteractive apt-get -qq upgrade \
- &&  DEBIAN_FRONTEND=noninteractive apt-get -qq install ed joe tcl build-essential zlib1g-dev zlib1g zip unzip 
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get -qq upgrade && \
+    DEBIAN_FRONTEND=noninteractive apt-get -qq install ed joe tcl yacc git vim \
+    sqlite3 gnat gprbuild fpc
 @
 ```
 
@@ -89,7 +93,7 @@ WORKDIR ${baseDIR}
 ### Pulling it all together
 
 ```
-<<debian.dockerfile>>=
+<<fpc.dockerfile>>=
 <<base.image>>
 <<base.userargs>>
 <<base.setupuser>>
@@ -101,6 +105,7 @@ WORKDIR ${baseDIR}
 
 ## build and test
 
-`docker build -t mek:debian -f ubuntu.dockerfile .`
+`docker build -t mek:fpc -f fpc.dockerfile .`
 
-`docker run --rm -it mek:debian /bin/bash`
+`docker run --rm -it -v $HOME/src/<project>:/work mek:fpc /bin/bash`
+

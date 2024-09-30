@@ -1,9 +1,8 @@
-# A simple base docker image for Debian
+# A simple base docker image for Dotnet Development
 
-My Debian Docker Images are pretty standard. Nothing specific here. Currently
-the default version is 12.
-
-## Debian Docker Image
+Currently have a client that primarily a Dotnet shop. I need a decent
+docker image for testing, etc. 
+## Dotnet Development Docker Image
 
 ### Setup FROM and enable a version choice.
 
@@ -13,8 +12,8 @@ An `ARG` for the version, `VER` is there. This can be overridden with `--build-a
 
 ```
 <<base.image>>=
-ARG VER=12
-FROM docker.io/debian:${VER}
+ARG VER=8.0
+FROM mcr.microsoft.com/dotnet/sdk:${VER}
 @  % def VER
 ```
 
@@ -67,7 +66,7 @@ additional changes, etc.
 <<base.addsoftware>>=
 RUN  DEBIAN_FRONTEND=noninteractive apt-get update \
  &&  DEBIAN_FRONTEND=noninteractive apt-get -qq upgrade \
- &&  DEBIAN_FRONTEND=noninteractive apt-get -qq install ed joe tcl build-essential zlib1g-dev zlib1g zip unzip 
+ &&  DEBIAN_FRONTEND=noninteractive apt-get -qq install ed joe tcl build-essential 
 @
 ```
 
@@ -89,7 +88,7 @@ WORKDIR ${baseDIR}
 ### Pulling it all together
 
 ```
-<<debian.dockerfile>>=
+<<dotnet.dockerfile>>=
 <<base.image>>
 <<base.userargs>>
 <<base.setupuser>>
@@ -101,6 +100,6 @@ WORKDIR ${baseDIR}
 
 ## build and test
 
-`docker build -t mek:debian -f ubuntu.dockerfile .`
+`docker build -t mek:dotnet -f ubuntu.dockerfile .`
 
-`docker run --rm -it mek:debian /bin/bash`
+`docker run --rm -it mek:dotnet /bin/bash`

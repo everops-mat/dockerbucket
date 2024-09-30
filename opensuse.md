@@ -77,7 +77,7 @@ additional changes, etc.
 RUN zypper ref &&             \
     zypper -n up &&           \
     zypper -n in ed joe tcl vim gcc13 gcc13-c++ gcc13-ada gcc13-fortran \
-      make git fossil groff wget curl
+      make git fossil groff wget curl hostname fpc fpc-src
 @
 ```
 
