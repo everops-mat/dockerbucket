@@ -15,7 +15,8 @@ make development and usage a bit more standardized.
 
 First let's set the where we'll pull from. I use `podman` and `docker` equally, so on I give the full path to the FROM image.
 
-An `ARG` for the version, `VER` is there. This can be overridden with `--build-arg 'VER=<version>'`.
+An `ARG` for the version, `VER` is there. This can be overridden with 
+`--build-arg 'VER=<version>'`.
 
 ```
 <<base.image>>=
@@ -73,7 +74,7 @@ additional changes, etc.
 ```
 <<base.addsoftware>>=
 RUN dnf install -y ed joe tcl tcllib gcc make git gcc-gnat gprbuild \
-  gfortran fossil cvs 
+  gfortran fossil cvs lua unzip zip bzip2 tar gzip
 @
 ```
 
@@ -92,6 +93,15 @@ WORKDIR ${baseDIR}
 @
 ```
 
+```
+<<install_tfenv>>=
+ARG TFVER="1.6.6"
+RUN git clone --depth=1 https://github.com/tfutils/tfenv.git ${baseDIR}/.tfenv && \
+    echo export PATH=\"${baseDIR}/.tfenv/bin:$PATH\" >> ${baseDIR}/.bashrc && \
+    ${baseDIR}/.tfenv/bin/tfenv install ${TFVER} && \
+    ${baseDIR}/.tfenv/bin/tfenv use ${TFVER}
+@
+```
 ### Pulling it all together
 
 ```
@@ -101,6 +111,7 @@ WORKDIR ${baseDIR}
 <<base.setupuser>>
 <<base.enablerepos>>
 <<base.addsoftware>>
+<<install_tfenv>>
 <<base.end>>
 @
 ```

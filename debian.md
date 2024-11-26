@@ -31,7 +31,6 @@ ARG baseDIR="/work"
 @
 ```
 
-u
 ### Add user and work directory
 
 You'll need to be careful here to not change a current directory. For example, do not set baseDIR="/bin". 

@@ -1,10 +1,10 @@
 #!/bin/sh
 # Mat Kovach
-# A shell script for opionated docker operations using literate 
+# A shell script for opionated docker operations using literate
 # programming for docker definitions
 set -eu
 
-BASE_DIR=${DOCKER_BASE_DIR-"$HOME/git/dockerbucket"}
+BASE_DIR=${DOCKER_BASE_DIR-"$HOME/eo/git/everops-mat/dockerbucket/main"}
 TANGLE_SCRIPT="$HOME/bin/tangle.tcl"
 TARGET_PLATFORM=${DOCKER_PLATFORM-"linux/amd64"}
 
@@ -51,7 +51,8 @@ generate_dockerfile() {
 op_build() {
     cd "${BASE_DIR}" || Fail "Failed to change directory to ${BASE_DIR}"
     generate_dockerfile \
-      | docker build --platform=${TARGET_PLATFORM} -t ${DOCKER_IMAGE} . -f -
+      | docker build --platform=${TARGET_PLATFORM} \
+      -t ${DOCKER_IMAGE} "$@" . -f -
 }
 
 op_run() {
@@ -102,13 +103,13 @@ DOCKER_IMAGE="${container}:my-docker"
 op=$1; shift
 
 case "$op" in
-    build) check_for_doc; op_build ;;
+    build) check_for_doc; op_build "$@" ;;
     run) check_for_doc; op_run "$@" ;;
     edit) exec "$EDITOR" "${DOC}" ;;
     buildrun)
         check_for_doc
-        op_build
-        op_run "$@" 
+        op_build "$@"
+        op_run "$@"
         ;;
     *) Err "illegal option $op, exiting"; usage ;;
 esac
