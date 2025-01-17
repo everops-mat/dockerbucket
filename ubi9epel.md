@@ -74,7 +74,7 @@ additional changes, etc.
 ```
 <<base.addsoftware>>=
 RUN dnf install -y ed joe tcl tcllib gcc make git gcc-gnat gprbuild \
-  gfortran fossil cvs lua unzip zip bzip2 tar gzip
+  gfortran fossil cvs lua unzip zip bzip2 tar gzip 
 @
 ```
 

@@ -17,7 +17,7 @@ First let's set the where we'll pull from. I use `podman` and
 An `ARG` for the version, `VER` is there. This can be overridden 
 with `--build-arg 'VER=<version>'`.
 
-```
+```Dockerfile
 <<base.image>>=
 ARG VER=15
 FROM docker.io/opensuse/leap:${VER}
@@ -28,7 +28,7 @@ FROM docker.io/opensuse/leap:${VER}
 
 Setup a base username, uid, gid, and work directory with some defaults. All of these can be overridden with `-build-arg "ARG=VALUE"`.
 
-```
+```Dockerfile
 <<base.userargs>>=
 ARG baseUSER="mek"
 ARG baseUID=501
