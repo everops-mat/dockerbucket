@@ -14,7 +14,7 @@ An `ARG` for the version, `VER` is there. This can be overridden
 <<base.image>>=
 ARG VER=9
 FROM docker.io/oraclelinux:9
-@  % def VER
+@
 ```
 
 ### Setup user specific arguments.

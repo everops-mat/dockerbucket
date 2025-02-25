@@ -35,6 +35,7 @@ ARG baseUSER="mat.kovach"
 ARG baseUID=5000
 ARG baseGID=5000
 ARG baseDIR="/work"
+ENV CC_FLAGS="-O2 -g -Wall -Wl,-z,now,-z,relro -fstack-protector-strong -fstack-clash-protection -D_FORTIFY_SOURCE=2"
 @
 ```
 
@@ -73,8 +74,10 @@ additional changes, etc.
 
 ```
 <<base.addsoftware>>=
-RUN dnf install -y ed joe tcl tcllib gcc make git gcc-gnat gprbuild \
-  gfortran fossil cvs lua unzip zip bzip2 tar gzip 
+RUN dnf install --skip-broken fpc fpc-src -y & \
+    dnf install -y ed joe tcl tcllib gcc make git gcc-gnat gprbuild \
+    gfortran fossil cvs lua unzip zip bzip2 tar gzip \
+    gdb valgrind strace dnf-utils 
 @
 ```
 

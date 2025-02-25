@@ -59,8 +59,10 @@ Add the group, user, (with the home directory of the user ad the work directory)
 ```
 <<base.setupuser>>=
 RUN useradd ${baseUSER}; \
-echo -e "${baseUSER}:1:999\n${baseUSER}:1001:64535" > /etc/subuid; \
-echo -e "${baseUSER}:1:999\n${baseUSER}:1001:64535" > /etc/subgid;
+ & echo -e "${baseUSER}:1:999" > /etc/subuid \
+ & ecoh -e "${baseUSER}:1001:64535" >> /etc/subuid \
+ & echo -e "${baseUSER}:1:999" > /etc/subgid \
+ & echo -e "${baseUSER}:1001:64535" >> /etc/subgid
 @
 ```
 
