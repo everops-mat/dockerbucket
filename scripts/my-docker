@@ -1,4 +1,5 @@
 #!/bin/sh
+# vim: filetype=sh tabstop=2 shiftwidth=2 sts=2 expandtab number
 # Mat Kovach
 # A shell script for opionated docker operations using literate
 # programming for docker definitions
@@ -9,18 +10,18 @@ TANGLE_SCRIPT="$HOME/bin/tangle.tcl"
 TARGET_PLATFORM=${DOCKER_PLATFORM-"linux/amd64"}
 
 Err() {
-    echo "Error: $@" 1>&2
+  echo "Error: $@" 1>&2
 }
 
 Fail() {
-    Err "$@"
-    exit 1
+  Err "$@"
+  exit 1
 }
 
 usage() {
     cat << __USAGE
 Usage: $0 [OPTIONS] CMD [DOCKER ARGUMENTS]
-    echo
+
 OPTIONS:
   -h,  --help           Show this help message
   -b,  --basedir DIR    Set the base directory (default: $HOME/git/dockerbucket)
@@ -42,33 +43,32 @@ __USAGE
 }
 
 generate_dockerfile() {
-    local dockerfile_content
-    dockerfile_content=$(${TANGLE_SCRIPT} -R "${container}.dockerfile" "${DOC}")
-    [ $? -eq 0 ] || Fail "Failed to generate Dockerfile from ${DOC}"
-    echo "$dockerfile_content"
+  dockerfile_content=$(${TANGLE_SCRIPT} -R "${container}.dockerfile" "${DOC}")
+  [ $? -eq 0 ] || Fail "Failed to generate Dockerfile from ${DOC}"
+  echo "$dockerfile_content"
 }
 
 op_build() {
-    cd "${BASE_DIR}" || Fail "Failed to change directory to ${BASE_DIR}"
-    generate_dockerfile \
-      | docker build --platform=${TARGET_PLATFORM} \
-      -t ${DOCKER_IMAGE} "$@" . -f -
+  cd "${BASE_DIR}" || Fail "Failed to change directory to ${BASE_DIR}"
+  generate_dockerfile \
+    | docker build --platform="${TARGET_PLATFORM}" \
+    -t "${DOCKER_IMAGE}" "$@" . -f -
 }
 
 op_run() {
-    CMD="$@"
-    docker run --rm -it \
-        -v "$HOME/work:/data" \
-        -e DISPLAY=host.docker.internal:0 \
-        --platform="${TARGET_PLATFORM}" \
-        "${DOCKER_IMAGE}" $CMD
+  CMD="$@"
+  docker run --rm -it \
+    -v "$HOME/work:/data" \
+    -e DISPLAY=host.docker.internal:0 \
+    --platform="${TARGET_PLATFORM}" \
+    "${DOCKER_IMAGE}" $CMD
 }
 
 check_for_doc() {
-    if [ ! -f "${DOC}" ]; then
-        Err "Could not find ${DOC}, exiting"
-        usage
-    fi
+  if [ ! -f "${DOC}" ]; then
+    Err "Could not find ${DOC}, exiting"
+    usage
+  fi
 }
 
 container=""
@@ -76,23 +76,28 @@ EDITOR=${EDITOR:-vi}
 
 [ $# -lt 1 ] && usage
 
-while [[ $# -gt 0 ]]; do
-    case "$1" in
-        --help|-h|-\?) usage ;;
-        -b|--basedir) shift; BASE_DIR="$1"; shift ;;
-        -l|-ls|--list)
-            ls "${BASE_DIR}"/*.md | grep -v README.md | sed -ne 's/.*\/\(.*\)\.md$/\1/p'
-            exit 0
-            ;;
-        -dl|--imagelist)
-            docker image ls | awk '$2 == "my-docker" {print}'
-            exit 0
-            ;;
-        -c|--container) shift; container="$1"; shift ;;
-        --) shift; break ;;
-        -*) Err "bad option: $1"; usage ;;
-        *) break ;;
-    esac
+while [ $# -gt 0 ]; do
+  case "$1" in
+  --help|-h|-\?) usage ;;
+  -b|--basedir) shift; BASE_DIR="$1"; shift ;;
+  -l|-ls|--list)
+    ls "${BASE_DIR}"/*.md | grep -v README.md | sed -ne 's/.*\/\(.*\)\.md$/\1/p'
+    exit 0
+    ;;
+  -dl|--imagelist)
+    docker image ls | awk '$2 == "my-docker" {print}'
+    exit 0
+    ;;
+  -c|--container) 
+    if [ $# -lt 2 ]
+    then
+      Fail "No argument for container name"
+    fi
+    shift; container="$1"; shift ;;
+  --) shift; break ;;
+  -*) Err "bad option: $1"; usage ;;
+  *) break ;;
+  esac
 done
 
 [ -z "${container}" ] && Fail "no container given, exiting"
@@ -100,18 +105,23 @@ done
 DOC="${BASE_DIR}/${container}.md"
 DOCKER_IMAGE="${container}:my-docker"
 
+if [ $# -lt 1 ]
+then
+  usage
+fi
+
 op=$1; shift
 
 case "$op" in
-    build) check_for_doc; op_build "$@" ;;
-    run) check_for_doc; op_run "$@" ;;
-    edit) exec "$EDITOR" "${DOC}" ;;
-    buildrun)
-        check_for_doc
-        op_build "$@"
-        op_run "$@"
-        ;;
-    *) Err "illegal option $op, exiting"; usage ;;
+build) check_for_doc; op_build "$@" ;;
+run) check_for_doc; op_run "$@" ;;
+edit) exec "$EDITOR" "${DOC}" ;;
+buildrun)
+  check_for_doc
+  op_build "$@"
+  op_run "$@"
+  ;;
+*) Err "illegal option $op, exiting"; usage ;;
 esac
 
 exit 0

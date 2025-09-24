@@ -7,20 +7,23 @@ My Alpine Docker Images are pretty standard. Nothing specific here.
 
 ### Setup FROM and enable a version choice.
 
-First let's set the where we'll pull from. I use `podman` and `docker` equally, so on I give the full path to the FROM image.
+First let's set the where we'll pull from. I use `podman` and 
+`docker` equally, so on I give the full path to the FROM image.
 
-An `ARG` for the version, `VER` is there. This can be overridden with `--build-arg 'VER=<version>'`.
+An `ARG` for the version, `VER` is there. This can be overridden 
+with `--build-arg 'VER=<version>'`.
 
 ```
 <<base.image>>=
 ARG VER=latest
 FROM docker.io/alpine:${VER}
-@  % def VER
+@
 ```
 
 ### Setup user specific arguments.
 
-Setup a base username, uid, gid, and work directory with some defaults. All of these can be overridden with `-build-arg "ARG=VALUE"`.
+Setup a base username, uid, gid, and work directory with some defaults. 
+All of these can be overridden with `-build-arg "ARG=VALUE"`.
 
 ```
 <<base.userargs>>=
@@ -45,7 +48,6 @@ RUN apk add --no-cache shadow
 @
 ```
 
-
 ```
 <<base.setupuser>>=
 RUN groupadd -g ${baseGID} ${baseUSER} &&      \
@@ -57,8 +59,8 @@ RUN groupadd -g ${baseGID} ${baseUSER} &&      \
 
 ### Add repos and update software.
 
-First, we'll add any additional repo. If you have additional repos you want to 
-enable, add them here.
+First, we'll add any additional repo. If you have additional repos 
+you want to enable, add them here.
 
 ```
 <<base.enablerepos>>=
@@ -74,7 +76,7 @@ additional changes, etc.
 ```
 <<base.addsoftware>>=
 RUN apk update && apk upgrade --no-cache && \
-         apk add --no-cache ed tcl joe 
+         apk add --no-cache ed tcl joe perl git bash
 @
 ```
 

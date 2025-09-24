@@ -16,9 +16,9 @@ with `--build-arg 'VER=<version>'`.
 
 ```
 <<base.image>>=
-ARG VER=12
+ARG VER=13
 FROM docker.io/debian:${VER}
-@  % def VER
+@
 ```
 
 ### Setup user specific arguments.
@@ -37,9 +37,11 @@ ARG baseDIR="/work"
 
 ### Add user and work directory
 
-You'll need to be careful here to not change a current directory. For example, do not set baseDIR="/bin". 
+You'll need to be careful here to not change a current directory. 
+For example, do not set baseDIR="/bin". 
 
-Add the group, user, (with the home directory of the user ad the work directory) and insure the proper ownership on the work directory.
+Add the group, user, (with the home directory of the user ad the 
+work directory) and insure the proper ownership on the work directory.
 
 ```
 <<base.setupuser>>=
@@ -70,8 +72,9 @@ additional changes, etc.
 <<base.addsoftware>>=
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get -qq upgrade && \
-    DEBIAN_FRONTEND=noninteractive apt-get -qq install ed joe tcl yacc git vim \
-    sqlite3 gnat gprbuild fpc unzip 
+    DEBIAN_FRONTEND=noninteractive apt-get -qq install ed joe \
+    tcl yacc git vim \
+    sqlite3 gnat gprbuild fpc unzip gdb
 @
 ```
 

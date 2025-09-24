@@ -69,10 +69,10 @@ additional changes, etc.
 
 ```
 <<base.addsoftware>>=
-RUN dnf install -y epel-release && dnf update \
- && dnf group install -y "Development Tools" \
- && dnf install -y ed joe tcl tcllib vim gcc flex byacc sqlite-devel make gcc git \
-    valgrind gdb ltrace strace perf papi sysstat gcc-gnat gprbuild 
+RUN dnf install -y epel-release && dnf update -y
+RUN dnf group install -y "Development Tools"
+RUN dnf install -y ed joe tcl tcllib vim gcc flex byacc sqlite-devel make gcc git 
+RUN dnf install -y valgrind gdb ltrace strace perf papi sysstat gcc-gnat gprbuild 
 RUN dnf install -y gcc-gfortran subversion cvs go
    
 @
