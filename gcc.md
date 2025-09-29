@@ -16,9 +16,9 @@ with `--build-arg 'VER=<version>'`.
 
 ```
 <<base.image>>=
-ARG VER=13
+ARG VER=15
 FROM docker.io/gcc:${VER}
-@  % def VER
+@
 ```
 
 ### Setup user specific arguments.
