@@ -1,30 +1,29 @@
-# A simple base docker image for gcc
+# A simple base docker image for CentOS 10
 
-A simple gcc based docker image
+There are a few other things I liked to do with my docker images to help
+make development and usage a bit more standardized.
 
-## GCC Docker Image
-
-[GCC](https://gcc.gnu.org/)
+## CentOS 10 Docker Image
 
 ### Setup FROM and enable a version choice.
 
-First let's set the where we'll pull from. I use `podman` and `docker`
+First let's set the where we'll pull from. I use `podman` and `docker` 
 equally, so on I give the full path to the FROM image.
 
-An `ARG` for the version, `VER` is there. This can be overridden
+An `ARG` for the version, `VER` is there. This can be overridden 
 with `--build-arg 'VER=<version>'`.
 
 ```
 <<base.image>>=
-ARG VER=15
-FROM docker.io/gcc:${VER}
-@
+ARG VER=stream10
+FROM quay.io/centos/centos:${VER}
+@ 
 ```
 
 ### Setup user specific arguments.
 
-Setup a base username, uid, gid, and work directory with some
-defaults. All of these can be overridden with `-build-arg "ARG=VALUE"`.
+Setup a base username, uid, gid, and work directory with some defaults. 
+All of these can be overridden with `-build-arg "ARG=VALUE"`.
 
 ```
 <<base.userargs>>=
@@ -52,12 +51,14 @@ RUN groupadd -g ${baseGID} ${baseUSER} &&      \
 
 ### Add repos and update software.
 
-First, we'll add any additional repo. If you have additional repos you
-want to enable, add them here.
+First, we'll add the EPEL repo. If you have additional repos you want to
+enable, add them here.
 
 ```
 <<base.enablerepos>>=
-# nothing to do here, carry on!
+RUN dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-10.noarch.rpm && \
+    /usr/bin/crb enable && \
+    dnf update -y
 @
 ```
 
@@ -68,10 +69,11 @@ additional changes, etc.
 
 ```
 <<base.addsoftware>>=
-RUN apt-get update && \
-    DEBIAN_FRONTEND=noninteractive apt-get -qq upgrade && \
-    DEBIAN_FRONTEND=noninteractive apt-get -qq install ed joe tcl \
-      yacc git vim sqlite3 gnat gprbuild golang-go
+RUN dnf install -y epel-release && dnf update -y
+RUN dnf group install -y "Development Tools"
+RUN dnf install -y ed joe tcl vim gcc flex byacc sqlite-devel make gcc git 
+RUN dnf install -y valgrind gdb ltrace strace perf papi sysstat 
+RUN dnf install -y gcc-gfortran subversion go fpc
 @
 ```
 
@@ -93,11 +95,10 @@ WORKDIR ${baseDIR}
 ### Pulling it all together
 
 ```
-<<gcc.dockerfile>>=
+<<centos10.dockerfile>>=
 <<base.image>>
 <<base.userargs>>
 <<base.setupuser>>
-<<base.enablerepos>>
 <<base.addsoftware>>
 <<base.end>>
 @
@@ -105,7 +106,6 @@ WORKDIR ${baseDIR}
 
 ## build and test
 
-`docker build -t mek:gcc -f gcc.dockerfile .`
+`docker build -t mek:centos -f centos.dockerfile .`
 
-`docker run --rm -it -v $HOME/src/<project>:/work mek:gcc /bin/bash`
-
+`docker run --rm -it mek:centos /bin/bash`

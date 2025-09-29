@@ -15,7 +15,7 @@ An `ARG` for the version, `VER` is there. This can be overridden with `--build-a
 <<base.image>>=
 ARG VER=12
 FROM docker.io/debian:${VER}
-@  % def VER
+@
 ```
 
 ### Setup user specific arguments.
